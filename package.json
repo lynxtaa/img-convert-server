@@ -2,21 +2,21 @@
   "name": "img-convert-server",
   "version": "1.0.0",
   "description": "Converts Images",
-  "main": "img-convert-server.js",
+  "main": "server.js",
   "scripts": {
-  	"lint": "eslint *.js",
-    "test": "mocha --reporter progress",
-    "start": "node img-convert-server.js"
+    "lint": "eslint *.js models controllers",
+    "start": "node server.js"
   },
   "author": "Alex Kondratyuk <lynxtaa@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "express": "^4.15.2",
-    "img-convert": "^1.1.1"
+    "express-fileupload": "^0.1.2",
+    "img-convert": "^1.1.1",
+    "morgan": "^1.8.1",
+    "pr-wrap": "^1.0.2"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "eslint": "^3.18.0",
-    "mocha": "^3.2.0"
+    "eslint": "^3.18.0"
   }
 }
