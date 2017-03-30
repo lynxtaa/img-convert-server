@@ -4,6 +4,7 @@ const express = require('express')
 const fileUpload = require('express-fileupload')
 const morgan = require('morgan')
 const fs = require('fs')
+const fsPr = require('pr-wrap').all(fs)
 const {join} = require('path')
 
 const env = process.env.NODE_ENV || 'development'
@@ -28,9 +29,21 @@ if (env == 'development') {
 	app.use(morgan('tiny', { stream: logStream }))
 }*/
 
+function cleanUp(dir) {
+	return fsPr.readdir(dir)
+		.then(contents => {
+			const callArr = contents.map(name => {
+				const fullPath = join(dir, name)
+				return fsPr.unlink(fullPath)
+			})
+			return Promise.all(callArr)
+		})
+		.catch(() => fsPr.mkdir(dir))
+}
+
 // Папка для временных файлов
 const tmpDir = join(__dirname, 'tmp')
-fs.existsSync(tmpDir) || fs.mkdirSync(tmpDir)
+cleanUp(tmpDir)
 
 require('./controllers')(app)
 
