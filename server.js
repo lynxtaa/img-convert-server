@@ -3,6 +3,7 @@
 const express = require('express')
 const fileUpload = require('express-fileupload')
 const morgan = require('morgan')
+const compression = require('compression')
 const fs = require('fs')
 const fsPr = require('pr-wrap').all(fs)
 const {join} = require('path')
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 })
 
 app.use(fileUpload())
+app.use(compression())
 
 // Логирование
 if (env == 'development') {
