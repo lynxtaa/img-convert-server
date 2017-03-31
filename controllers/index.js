@@ -2,7 +2,7 @@ const {resolve} = require('path')
 const {convertAll} = require('../models')
 
 module.exports = function(app) {
-	app.get('/', (req, res) => {
+	app.all('/', (req, res) => {
 		res.type('text/plain')
 		res.sendFile(resolve(__dirname, '../README.md'))
 	})

@@ -5,8 +5,6 @@ const fsPr = prWrap.all(require('fs'))
 const {resolve, join, extname} = require('path')
 
 exports.convertAll = function(files, format, params={}) {
-	params = prepareParams(params)
-
 	function convert(srcPath) {
 		const targetPath = srcPath.replace(extname(srcPath), `.${format}`)
 
@@ -43,14 +41,3 @@ function del(paths) {
 	return Promise.all(paths.map(path => fsPr.unlink(path)))
 }
 
-function prepareParams(params) {
-	const result = Object.assign({}, params)
-
-	Object.keys(result).forEach(key => {
-		const num = +result[key]
-		if (!isNaN(num)) {
-			result[key] = num
-		}
-	})
-	return result
-}
