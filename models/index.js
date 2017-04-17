@@ -1,4 +1,5 @@
 const imgConvert = require('img-convert')
+const _ = require('lodash')
 const crypto = require('crypto')
 const prWrap = require('pr-wrap')
 const fsPr = prWrap.all(require('fs'))
@@ -38,6 +39,5 @@ function getBase64(path) {
 }
 
 function del(paths) {
-	return Promise.all(paths.map(path => fsPr.unlink(path)))
+	return Promise.all(_.uniq(paths).map(path => fsPr.unlink(path)))
 }
-
