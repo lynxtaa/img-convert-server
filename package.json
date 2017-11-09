@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Converts Images",
   "main": "server.js",
+  "engines": {
+    "node": ">=8.9.0"
+  },
   "scripts": {
     "lint": "eslint *.js models controllers",
     "start": "node server.js"
@@ -10,13 +13,13 @@
   "author": "Alex Kondratyuk <lynxtaa@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "compression": "^1.6.2",
-    "express": "^4.15.2",
-    "express-fileupload": "^0.1.2",
-    "img-convert": "^1.1.1",
+    "compression": "^1.7.1",
+    "express": "^4.16.2",
+    "express-fileupload": "^0.1.4",
+    "fs-extra": "^4.0.2",
+    "img-convert": "^1.1.2",
     "lodash": "^4.17.4",
-    "morgan": "^1.8.1",
-    "pr-wrap": "^1.0.2"
+    "morgan": "^1.9.0"
   },
   "devDependencies": {
     "eslint": "^3.18.0"
