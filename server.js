@@ -20,6 +20,7 @@ app.use((req, res, next) => {
 
 app.use(fileUpload())
 app.use(compression())
+app.use(express.json())
 
 // Логирование
 if (env == 'development') {
