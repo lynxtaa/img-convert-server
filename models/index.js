@@ -1,19 +1,22 @@
 const imgConvert = require('img-convert')
 const _ = require('lodash')
 const crypto = require('crypto')
-const prWrap = require('pr-wrap')
-const fsPr = prWrap.all(require('fs'))
-const {resolve, join, extname} = require('path')
+const fs = require('fs-extra')
+const { resolve, join, extname } = require('path')
+
+const tmpFolder = resolve(__dirname, '../tmp')
+
+const del = (...paths) => Promise.all(_.uniq(paths).map(path => fs.unlink(path)))
 
 exports.convertAll = function(files, format, params={}) {
-	function convert(srcPath) {
+	async function convert(srcPath) {
 		const targetPath = srcPath.replace(extname(srcPath), `.${format}`)
+		const path = await imgConvert(srcPath, targetPath, params)
+		const data = await fs.readFile(path, 'base64')
 
-		return imgConvert(srcPath, targetPath, params)
-			.then(getBase64)
-			.then(data => del([srcPath, targetPath])
-				.then(() => data)
-			)
+		await del(srcPath, targetPath)
+
+		return data
 	}
 
 	const callArr = Object
@@ -26,18 +29,10 @@ exports.convertAll = function(files, format, params={}) {
 	return Promise.all(callArr)
 }
 
-function moveToTemp(file) {
-	const tmpFolder = resolve(__dirname, '../tmp')
+async function moveToTemp(file) {
 	const newName = crypto.randomBytes(15).toString('hex') + extname(file.name)
 	const newPath = join(tmpFolder, newName)
+	await file.mv(newPath)
 
-	return prWrap(file.mv, file)(newPath).then(() => newPath)
-}
-
-function getBase64(path) {
-	return fsPr.readFile(path, 'base64')
-}
-
-function del(paths) {
-	return Promise.all(_.uniq(paths).map(path => fsPr.unlink(path)))
+	return newPath
 }

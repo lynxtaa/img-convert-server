@@ -1,12 +1,11 @@
-/* eslint-disable no-console */
+'use strict'
 
 const express = require('express')
 const fileUpload = require('express-fileupload')
 const morgan = require('morgan')
 const compression = require('compression')
-const fs = require('fs')
-const fsPr = require('pr-wrap').all(fs)
-const {join} = require('path')
+const { emptyDirSync, ensureDirSync } = require('fs-extra')
+const { join } = require('path')
 
 const env = process.env.NODE_ENV || 'development'
 const PORT = 9999
@@ -31,24 +30,14 @@ if (env == 'development') {
 	app.use(morgan('tiny', { stream: logStream }))
 }*/
 
-function cleanUp(dir) {
-	return fsPr.readdir(dir)
-		.then(contents => {
-			const callArr = contents.map(name => {
-				const fullPath = join(dir, name)
-				return fsPr.unlink(fullPath)
-			})
-			return Promise.all(callArr)
-		})
-		.catch(() => fsPr.mkdir(dir))
-}
-
 // Папка для временных файлов
 const tmpDir = join(__dirname, 'tmp')
-cleanUp(tmpDir)
+ensureDirSync(tmpDir)
+emptyDirSync(tmpDir)
 
 require('./controllers')(app)
 
+/* eslint-disable no-console, no-process-exit */
 app
 	.listen(PORT, () => {
 		console.log(`Listening on port ${PORT}`)
@@ -61,11 +50,8 @@ app
 process
 	.on('uncaughtException', err => {
 		console.log(`Uncaught Exception: ${err}`)
-		// eslint-disable-next-line no-process-exit
 		process.exit(1)
 	})
 	.on('unhandledRejection', (reason, p) => {
 		console.log(`Unhandled Rejection at Promise ${p} reason: ${reason}`)
 	})
-
-/* eslint-enable no-console */
