@@ -1,9 +1,4 @@
 const snap = require('cytosnap')()
+const start = snap.start()
 
-module.exports = async function(options) {
-	await snap.start()
-	const base64Img = await snap.shot(options)
-	await snap.stop()
-
-	return base64Img
-}
+module.exports = options => start.then(() => snap.shot(options))

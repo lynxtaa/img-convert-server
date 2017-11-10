@@ -4,8 +4,6 @@ const express = require('express')
 const fileUpload = require('express-fileupload')
 const morgan = require('morgan')
 const compression = require('compression')
-const { emptyDirSync, ensureDirSync } = require('fs-extra')
-const { join } = require('path')
 const rfs = require('rotating-file-stream')
 
 const env = process.env.NODE_ENV || 'development'
@@ -25,11 +23,6 @@ if (env == 'production') {
 else {
 	app.use(morgan('dev'))
 }
-
-// Папка для временных файлов
-const tmpDir = join(__dirname, 'tmp')
-ensureDirSync(tmpDir)
-emptyDirSync(tmpDir)
 
 require('./controllers')(app)
 

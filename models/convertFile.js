@@ -1,29 +1,28 @@
 const imgConvert = require('img-convert')
-const { uniq } = require('lodash')
 const crypto = require('crypto')
 const fs = require('fs-extra')
-const { resolve, join, extname } = require('path')
+const { join, extname } = require('path')
 
-const tmpFolder = resolve(__dirname, '../tmp')
+const tmpFolder = require('os').tmpdir()
 
-function del(...paths) {
-	return Promise.all(uniq(paths).map(path => fs.unlink(path)))
-}
-
-async function moveToTemp(file) {
-	const newName = crypto.randomBytes(15).toString('hex') + extname(file.name)
-	const newPath = join(tmpFolder, newName)
-	await file.mv(newPath)
-
-	return newPath
-}
+const getTmpPath = fileName => join(tmpFolder, crypto.randomBytes(15).toString('hex') + extname(fileName))
 
 module.exports = async function(file, format, params={}) {
-	const srcPath = await moveToTemp(file)
+	const srcPath = getTmpPath(file.name)
+
+	await file.mv(srcPath)
+
 	const targetPath = srcPath.replace(extname(srcPath), `.${format}`)
+
 	const path = await imgConvert(srcPath, targetPath, params)
 	const data = await fs.readFile(path, 'base64')
-	await del(srcPath, targetPath)
+
+	if (srcPath == targetPath) {
+		await fs.unlink(srcPath)
+	}
+	else {
+		await Promise.all([fs.unlink(srcPath), fs.unlink(targetPath)])
+	}
 
 	return data
 }

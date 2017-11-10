@@ -3,7 +3,7 @@ const { convertFile, graph } = require('../models')
 
 const sendRes = res => [
 	res.send.bind(res),
-	err => res.send({ code: 1, error: err.message }),
+	err => res.status(500).send(err.message),
 ]
 
 module.exports = function(app) {
@@ -13,7 +13,9 @@ module.exports = function(app) {
 	})
 
 	app.post('/graph', (req, res) => {
-		graph(req.body).then(...sendRes(res))
+		graph(req.body)
+			.then(base64 => ({ base64 }))
+			.then(...sendRes(res))
 	})
 
 	app.post('/:format', (req, res) => {
