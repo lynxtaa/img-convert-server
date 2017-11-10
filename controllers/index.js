@@ -12,7 +12,7 @@ module.exports = function(app) {
 		res.sendFile(resolve(__dirname, '../README.md'))
 	})
 
-	app.post('/graph', (req, res, next) => {
+	app.post('/graph', (req, res) => {
 		graph(req.body).then(...sendRes(res))
 	})
 

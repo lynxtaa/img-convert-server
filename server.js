@@ -6,30 +6,25 @@ const morgan = require('morgan')
 const compression = require('compression')
 const { emptyDirSync, ensureDirSync } = require('fs-extra')
 const { join } = require('path')
+const rfs = require('rotating-file-stream')
 
 const env = process.env.NODE_ENV || 'development'
-const PORT = 9999
+const PORT = process.env.PORT || 9999
 
 const app = express()
-
-// Сброс таймаута для запросов
-app.use((req, res, next) => {
-	req.setTimeout(0)
-	next()
-})
 
 app.use(fileUpload())
 app.use(compression())
 app.use(express.json())
 
-// Логирование
-if (env == 'development') {
-	app.use(morgan('tiny'))
+if (env == 'production') {
+	// Логирование последних суток
+	const accessLogStream = rfs('access.log', { interval: '1d', path: __dirname })
+	app.use(morgan('short', { stream: accessLogStream }))
 }
-/*else {
-	const logStream = fs.createWriteStream(join(__dirname, 'access.log'), { flags: 'a' })
-	app.use(morgan('tiny', { stream: logStream }))
-}*/
+else {
+	app.use(morgan('dev'))
+}
 
 // Папка для временных файлов
 const tmpDir = join(__dirname, 'tmp')
